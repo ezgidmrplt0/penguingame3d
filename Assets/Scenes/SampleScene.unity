@@ -390,9 +390,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileNormalPrefab: {fileID: 2786738870028648254, guid: 595844c41b5354d7a9c5e99e8fc2ac3a, type: 3}
-  tileHeavyPrefab: {fileID: 0}
+  tileHeavyPrefab: {fileID: 6559756283035353299, guid: 33dd330e2d3b3fba7bf2e458402fba63, type: 3}
   tileObstaclePrefab: {fileID: 8357987261328872593, guid: eed0e90fbfeaee31394aa931c1225acf, type: 3}
-  tileIcePrefab: {fileID: 0}
+  tileIcePrefab: {fileID: 2155350815213999527, guid: a70033bd6fbc9188d87c8277e8357e34, type: 3}
   tileStartPrefab: {fileID: 2131422052832046967, guid: 8714e9609df72a73eb68bfd58723912d, type: 3}
   tileHomePrefab: {fileID: 2209912510899504376, guid: f78db5643e11db4309e2878db4acc56b, type: 3}
   penguinPrefab: {fileID: 5146076183573144078, guid: 4b05a3757c19c2d10a4287d1cddd411e, type: 3}
@@ -417,6 +417,9 @@ MonoBehaviour:
   isGameOver: 0
   moveDuration: 0.3
   jumpPower: 0.3
+  penguinScale: 0.4
+  verticalOffset: 0.3
+  animationSpeed: 0.5
   moveText: {fileID: 0}
   winPanel: {fileID: 0}
   losePanel: {fileID: 0}

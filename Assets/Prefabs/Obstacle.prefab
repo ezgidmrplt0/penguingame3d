@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6494883798511102196}
   - component: {fileID: 6636780974452464108}
   m_Layer: 0
-  m_Name: ChatGPT Image Jan 4, 2026, 02_56_29 AM(2)
+  m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
