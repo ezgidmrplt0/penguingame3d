@@ -12,8 +12,13 @@ public class GameManager : MonoBehaviour
     public int maxMoves = 15;
     public int currentMoves;
     public bool isGameOver;
-    public float moveDuration = 0.3f;
+    public float moveDuration = 1.0f;
     public float jumpPower = 0.3f;
+
+    [Header("Penguin Visuals")]
+    [Range(0.1f, 2f)] public float penguinScale = 0.4f;
+    [Range(0f, 1f)] public float verticalOffset = 0.3f;
+    [Range(0.1f, 2f)] public float animationSpeed = 0.5f;
 
     [Header("UI References")]
     public Text moveText;
@@ -62,13 +67,43 @@ public class GameManager : MonoBehaviour
         isGameOver = false;
         isPlayerMoving = false;
         
+        // Setup Animator
+        Animator anim = playerObj.GetComponent<Animator>();
+        if (anim == null) anim = playerObj.AddComponent<Animator>();
+        
+        RuntimeAnimatorController controller = Resources.Load<RuntimeAnimatorController>("Animations/PenguinController");
+        if (controller != null) anim.runtimeAnimatorController = controller;
+        else Debug.LogWarning("Could not load Animations/PenguinController");
+        
         // Kill existing tweens on the player to prevent conflicts
         if (playerObj != null) playerObj.transform.DOKill();
 
         if (winPanel) winPanel.SetActive(false);
         if (losePanel) losePanel.SetActive(false);
         
+        // Apply Visual Settings
+        if (playerObj != null)
+        {
+            playerObj.transform.localScale = Vector3.one * penguinScale;
+            Animator a = playerObj.GetComponent<Animator>();
+            if (a != null) a.speed = animationSpeed;
+        }
+
         UpdateUI();
+    }
+
+    private void LateUpdate()
+    {
+        // Allow runtime tweaking
+        if (playerObj != null && !isGameOver)
+        {
+             // Optional: visual tweak in realtime
+             if (playerObj.transform.localScale.x != penguinScale) 
+                 playerObj.transform.localScale = Vector3.one * penguinScale;
+             
+             Animator a = playerObj.GetComponent<Animator>();
+             if (a != null && a.speed != animationSpeed) a.speed = animationSpeed;
+        }
     }
 
     public void ClearLevel()
@@ -139,10 +174,25 @@ public class GameManager : MonoBehaviour
             Vector3 endPos = t.visualObject.transform.position;
             // Maintain Z depth
             endPos.z = playerObj.transform.position.z;
+            endPos.y += verticalOffset; // Visual center offset
 
-            // DOTween Jump
-            // WaitForCompletion allows us to wait in the Coroutine
-            yield return playerObj.transform.DOJump(endPos, jumpPower, 1, moveDuration).WaitForCompletion();
+            Animator anim = playerObj.GetComponent<Animator>();
+            TileData startTile = GridManager.Instance.GetTileAt(playerGridPos);
+            bool isSliding = (startTile != null && startTile.type == TileType.Ice);
+
+            if (anim != null)
+            {
+                anim.SetTrigger(isSliding ? "Slide" : "Jump");
+            }
+
+            if (isSliding)
+            {
+                yield return playerObj.transform.DOMove(endPos, moveDuration).SetEase(Ease.Linear).WaitForCompletion();
+            }
+            else
+            {
+                yield return playerObj.transform.DOJump(endPos, jumpPower, 1, moveDuration).WaitForCompletion();
+            }
             
             playerGridPos = new Vector2Int(t.x, t.y);
             CheckGameState(t);

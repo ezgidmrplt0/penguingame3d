@@ -202,10 +202,18 @@ public class LevelManager : MonoBehaviour
         {
             float px = startX + (data.start.x * spacing);
             float py = startY + (data.start.y * spacing);
-            Vector3 pPos = new Vector3(px, py, -0.5f);
+            
+            float vOffset = 0f;
+            if (GameManager.Instance != null) vOffset = GameManager.Instance.verticalOffset;
+            
+            Vector3 pPos = new Vector3(px, py + vOffset, -0.5f);
 
             GameObject pObj = Instantiate(penguinPrefab, pPos, Quaternion.identity);
-            pObj.transform.localScale = Vector3.one * 0.15f;
+            
+            if (GameManager.Instance != null)
+                pObj.transform.localScale = Vector3.one * GameManager.Instance.penguinScale;
+            else
+                pObj.transform.localScale = Vector3.one * 0.4f;
             
             // Pass the player GameObject to GameManager directly
             // No PlayerController required anymore
