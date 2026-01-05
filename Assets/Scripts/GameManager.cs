@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Penguin Visuals")]
     [Range(0.1f, 2f)] public float penguinScale = 0.4f;
-    [Range(0f, 1f)] public float verticalOffset = 0.3f;
+    [Range(0f, 1f)] public float verticalOffset = 0.75f;
     [Range(0.1f, 2f)] public float animationSpeed = 0.5f;
 
     [Header("UI References")]
@@ -29,6 +29,7 @@ public class GameManager : MonoBehaviour
     private GameObject playerObj;
     private Vector2Int playerGridPos;
     private bool isPlayerMoving;
+    private float facingDirection = 1f;
 
     private void Awake()
     {
@@ -66,6 +67,7 @@ public class GameManager : MonoBehaviour
         playerGridPos = startPos;
         isGameOver = false;
         isPlayerMoving = false;
+        facingDirection = 1f;
         
         // Setup Animator
         Animator anim = playerObj.GetComponent<Animator>();
@@ -84,7 +86,8 @@ public class GameManager : MonoBehaviour
         // Apply Visual Settings
         if (playerObj != null)
         {
-            playerObj.transform.localScale = Vector3.one * penguinScale;
+            // Initial scale set
+            playerObj.transform.localScale = new Vector3(penguinScale * facingDirection, penguinScale, penguinScale);
             Animator a = playerObj.GetComponent<Animator>();
             if (a != null) a.speed = animationSpeed;
         }
@@ -98,8 +101,13 @@ public class GameManager : MonoBehaviour
         if (playerObj != null && !isGameOver)
         {
              // Optional: visual tweak in realtime
-             if (playerObj.transform.localScale.x != penguinScale) 
-                 playerObj.transform.localScale = Vector3.one * penguinScale;
+             // Respect facing direction
+             Vector3 currentScale = playerObj.transform.localScale;
+             float targetX = penguinScale * facingDirection;
+             if (Mathf.Abs(currentScale.x - targetX) > 0.01f || Mathf.Abs(currentScale.y - penguinScale) > 0.01f)
+             {
+                 playerObj.transform.localScale = new Vector3(targetX, penguinScale, penguinScale);
+             }
              
              Animator a = playerObj.GetComponent<Animator>();
              if (a != null && a.speed != animationSpeed) a.speed = animationSpeed;
@@ -120,6 +128,12 @@ public class GameManager : MonoBehaviour
     public void RequestMove(Vector2Int direction)
     {
         if (isGameOver || playerObj == null || isPlayerMoving) return;
+
+        // Update facing direction
+        if (direction.x != 0)
+        {
+            facingDirection = direction.x > 0 ? 1f : -1f;
+        }
 
         Vector2Int nextPos = playerGridPos + direction;
         TileData nextTile = GridManager.Instance.GetTileAt(nextPos);

@@ -418,8 +418,8 @@ MonoBehaviour:
   moveDuration: 0.3
   jumpPower: 0.3
   penguinScale: 0.4
-  verticalOffset: 0.3
-  animationSpeed: 0.5
+  verticalOffset: 0.75
+  animationSpeed: 1
   moveText: {fileID: 0}
   winPanel: {fileID: 0}
   losePanel: {fileID: 0}
